@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 /*
 struct Alunos{
 	char nome[30];
@@ -170,3 +171,30 @@ void main(){
 	}
  
 }
+  /* CRIA ARQUIVO E SALVA
+  
+  FILE *fp;
+   int c;
+
+   fp = fopen("C:\\Users\\Aluno\\Desktop\\arquivoTex.txt","r");
+   while(1)
+   {
+      c = fgetc(fp);
+      if( feof(fp) )
+      {
+         break ;
+      }
+      printf("%c", c);
+   }
+   fclose(fp);
+
+
+  FILE * fp;
+
+  fp = fopen ("C:\\Users\\Aluno\\Desktop\\arquivoTex.txt", "w+");
+  fprintf(fp, "%s %s %s %d", "We", "are", "in", 2012);
+
+  fclose(fp);
+
+  return(0);
+*/
