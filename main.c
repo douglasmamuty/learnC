@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 struct Alunos{
 	char nome[30];
 	int matricula;
@@ -28,11 +27,15 @@ struct Turma{
 	int codCurso;
 };
 typedef struct Turma turma;
-/*
-void fnCadastraCurso(){
 
+int fnCadastraCurso(curso *cursos){
+    int i = sizeof(cursos);
+    printf("%d",i);
+    printf("Digite o nome do curso: \n");
+    scanf("%s",cursos[i].nome);
+    return 0;
 }
-
+/*
 void fnCadastraTurma(){
 
 }
@@ -62,35 +65,14 @@ void fnListaDisciplina(int codTurma){
 }*/
 
 void main(){
-	/*//Declaração de variaveis dinamicas com malloc()
-    disciplina *disciplinas = (disciplina *) malloc(sizeof(disciplina));
-	aluno *alunos = (aluno *) malloc(sizeof(aluno));
-	turma *turmas = (turma *) malloc(sizeof(turma));
-	curso *cursos = (curso *) malloc(sizeof(curso));*/
+	/*Declaração de variaveis dinamicas com malloc()*/
+    disciplina *disciplinas = (disciplina *) malloc(sizeof(disciplina)* 10);
+	aluno *alunos = (aluno *) malloc(sizeof(aluno)*30);
+	turma *turmas = (turma *) malloc(sizeof(turma)*6);
+	curso *cursos = (curso *) malloc(sizeof(curso)*3);
 
-	/*struct rec *ptr_one;*/
-    /*ptr_one =(struct rec *) malloc (sizeof(struct rec));*/
-    aluno *alunos = (aluno *) malloc(sizeof(aluno));
 
-    alunos->nome[0] = 'D';
-    alunos->nome[1] = 'o';
-    alunos->nome[2] = 'u';
-    alunos->nome[3] = 'g';
-    alunos->nome[4] = 'l';
-    alunos->nome[5] = 'a';
-    alunos->nome[5] = 's';
-    alunos->matricula = 35514;
-    alunos->codDisciplina = 10;
-
-    printf("First value: %c\n", alunos->nome);
-    memcpy(string, array, 5);
-    string[x] = '\0'; 
-    printf("Matricula: %d\n", alunos->matricula);
-    printf("Codigo Disciplina: %d\n", alunos->codDisciplina);
-
-    free(alunos);
-
-	/*//Menu do sistema*/
+	/*Menu do sistema*/
 	int controle = 9999,entrada,controle1 = 9999,entrada1;
 	while(controle != 0){
     	printf("Selecione uma opcao do menu:\n");
@@ -106,7 +88,11 @@ void main(){
                 	scanf("%i", &entrada1);
                 	switch(entrada1){
                     	case 1:
-                        	/*fnCadastraCurso();*/
+                        	if(fnCadastraCurso(curso *cursos)){
+                                printf("Saved!");
+                        	}else{
+                        	    printf("Error contact adm!");
+                        	}
                         	break;
                     	case 2:
                         	/*fnListaCurso();*/
