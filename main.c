@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct Alunos{
 	char nome[30];
@@ -29,11 +30,12 @@ struct Turma{
 typedef struct Turma turma;
 
 int fnCadastraCurso(curso *cursos){
-    int i = sizeof(cursos);
-    printf("%d",i);
     printf("Digite o nome do curso: \n");
-    scanf("%s",cursos[i].nome);
-    return 0;
+    scanf("%s",cursos[0].nome);
+    printf("Digite o codigo do curso: \n");
+    scanf("%d", &cursos[0].codCurso);
+
+    return 1;
 }
 /*
 void fnCadastraTurma(){
@@ -75,7 +77,7 @@ void main(){
 	/*Menu do sistema*/
 	int controle = 9999,entrada,controle1 = 9999,entrada1;
 	while(controle != 0){
-    	printf("Selecione uma opcao do menu:\n");
+    	printf("Selecione uma mingw32-gcc.exeopcao do menu:\n");
     	printf("1 - Curso\n2 - Turma\n3 - Disciplina\n4 - Aluno\n0 - Exit\n");
     	controle1 = 9999;
     	scanf("%d", &entrada);
@@ -88,10 +90,10 @@ void main(){
                 	scanf("%i", &entrada1);
                 	switch(entrada1){
                     	case 1:
-                        	if(fnCadastraCurso(curso *cursos)){
-                                printf("Saved!");
+                        	if(fnCadastraCurso(cursos)){
+                                printf("Salvo!");
                         	}else{
-                        	    printf("Error contact adm!");
+                        	    printf("Erro!");
                         	}
                         	break;
                     	case 2:
