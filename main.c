@@ -4,29 +4,30 @@
 
 #define Tamanho 100
 struct Alunos{
-	char nome[30];
-	int matricula;
-	int codDisciplina;
+    char nome[Tamanho];
+    int matricula;
+    int codDisciplina[Tamanho] ;
 };
+
 typedef struct Alunos aluno;
 
 struct Disciplina{
-	char nome[30];
-	int codDisciplina;
-	int codTurma;
+    char nome[Tamanho];
+    int codDisciplina;
+    int codTurma;
 };
 typedef struct Disciplina disciplina;
 
 struct Curso{
-	char nome[30];
-	int codCurso;
+    char nome[Tamanho];
+    int codCurso;
 };
 typedef struct Curso curso;
 
 struct Turma{
-	char nome[30];
-	int codTurma;
-	int codCurso;
+    char nome[Tamanho];
+    int codTurma;
+    int codCurso;
 };
 typedef struct Turma turma;
 
@@ -41,13 +42,11 @@ int fnCadastraCurso(curso *cursos, int intContador){
 }
 
 void fnListaCurso(curso *cursos,int intContador){
-    printf(" ______________________________________________\n");
-    printf("|Codigo               | Curso                  |\n");
-    printf(" ______________________________________________\n");
-    for(int i = 1; i <= intContador ;i++){
-            printf("|%s               | %d                  |\n",cursos[i].nome,cursos[i].codCurso);
+    int i = 1;
+    printf("Lista de Cursos :\n");
+    for(i; i <= intContador; i++){
+            printf("    %d - %s;\n",cursos[i].codCurso,cursos[i].nome);
     }
-    printf(" ______________________________________________\n");
 }
 
 int fnCadastraTurma(turma *turmas,int intContador){
@@ -62,217 +61,295 @@ int fnCadastraTurma(turma *turmas,int intContador){
     return intContador;
 }
 const char* fnSearchCurso(int codCurso,curso *cursos){
-    for(int i = 1; i <= Tamanho ;i++){
+    int i = 1;
+    for(i; i <= Tamanho ;i++){
             if(cursos[i].codCurso == codCurso){
                 return cursos[i].nome;
             }
     }
-    return "Nao foi possivel encontrar o Curso";
+    return "Nao foi possivel encontrar o Curso!";
 }
 
 void fnListaTurma(int codCurso,turma *turmas,int intContador,curso *cursos){
 
     printf("Curso : %s\n",fnSearchCurso(codCurso,cursos));
-    printf(" ______________________________________________\n");
-    printf("|Codigo               | Turma                  |\n");
-    printf(" ______________________________________________\n");
-    for(int i = 1; i <= intContador ;i++){
-            printf("|%d               | %s                  |\n",turmas[i].codTurma, turmas[i].nome);
+    printf("Lista de Turmas :\n");
+    int i = 1;
+    for(i; i <= intContador ;i++){
+            if(turmas[i].codCurso == codCurso){
+                    printf("    %d - %s;\n",turmas[i].codTurma, turmas[i].nome);
+            }
     }
-    printf(" ______________________________________________\n");
-}
-/*
-void fnCadastraDisciplina(){
 }
 
-}#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-struct Alunos{
-	char nome[30];
-	int matricula;
-	int codDisciplina;
-};
-typedef struct Alunos aluno;
-
-struct Disciplina{
-	char nome[30];
-	int codDisciplina;
-	int codTurma;
-};
-typedef struct Disciplina disciplina;
-
-struct Curso{
-	char nome[30];
-	int codCurso;
-};
-typedef struct Curso curso;
-
-struct Turma{
-	char nome[30];
-	int codTurma;
-	int codCurso;
-};
-typedef struct Turma turma;
-
-int fnCadastraCurso(curso *cursos){
-    printf("Digite o nome do curso: \n");
-    scanf("%s",cursos[0].nome);int fnCadastraCurso(curso *cursos, int intContador){
+int fnCadastraDisciplina(disciplina *disciplinas, int intContador){
     intContador++;
-    printf("Digite o nome do curso: \n");
-    scanf("%s",cursos[intContador].nome);
-    printf("Digite o codigo do curso: \n");
-    scanf("%d", &cursos[intContador].codCurso);
+    printf("Digite o nome da disciplina: \n");
+    scanf("%s",disciplinas[intContador].nome);
+    printf("Digite o codigo da disciplina: \n");
+    scanf("%d", &disciplinas[intContador].codDisciplina);
+    printf("Digite o codigo do turma que a disciplina pertence: \n");
+    scanf("%d", &disciplinas[intContador].codTurma);
 
     return intContador;
 }
-    printf("Digite o codigo do curso: \n");
-    scanf("%d", &cursos[0].codCurso);
 
-    return 1;
+const char* fnSearchTurma(int codTurma,turma *turmas){
+    int i = 1;
+    for(i; i <= Tamanho ;i++){
+            if(turmas[i].codTurma == codTurma){
+                return turmas[i].nome;
+            }
+    }
+    return "Nao foi possivel encontrar uma Turma!";
 }
 
-void fnCadastraDisciplina(){
 
+void fnListaDisciplina(int codTurma,disciplina *disciplinas,int intContador,turma *turmas){
+    printf("Turma : %s\n",fnSearchTurma(codTurma,turmas));
+    printf(" Lista de Disciplinas :\n");
+    int i = 1;
+    for(i; i <= intContador ;i++){
+            if(disciplinas[i].codTurma == codTurma){
+                    printf("    %d - %s;\n",disciplinas[i].codDisciplina, disciplinas[i].nome);
+            }
+
+    }
 }
 
-void fnCadastraAluno(){
-
+int fnCadastraDisciplinaAluno(aluno *alunos,int codAluno,int intContador){
+    printf("Digite o codigo da disciplina que o aluno pertence: \n");
+    scanf("%d", &alunos[codAluno].codDisciplina[intContador]);
+    intContador = intContador +1;
+    return intContador;
 }
 
-void fnListaAluno(int matricula){
+int fnCadastraAluno(aluno *alunos, int intContador){
+    intContador++;
+    printf("Digite o nome do aluno: \n");
+    scanf("%s",alunos[intContador].nome);
+    printf("Digite a matricula do aluno: \n");
+    scanf("%d", &alunos[intContador].matricula);
+    int controle = 9999,entrada;
+    int intContDisciplina = 0;
 
+    while(controle != 0){
+        printf("1 - Cadastrar nova disciplina\n0 - Voltar cadastro de aluno\n");
+        scanf("%d", &entrada);
+        switch(entrada){
+            case 1:
+                   intContDisciplina = fnCadastraDisciplinaAluno(alunos, intContador,intContDisciplina);
+                break;
+            case 0:
+                controle = 0;
+                break;
+            default:
+                printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
+                break;
+        }
+
+    }
+    return intContador;
 }
 
-void fnListaDisciplina(int codTurma){
+int fnSearchAluno(int matricula,aluno *alunos){
+    int i = 1;
+    for(i; i <= Tamanho ;i++){
+            if(alunos[i].matricula == matricula){
+                return i;
+            }
+    }
+    return -1;
+}
 
-}*/
+const char* fnSearchDisciplina(int codDisciplina,disciplina *disciplinas){
+    int i = 1;
+    for(i; i <= Tamanho ;i++){
+            if(disciplinas[i].codDisciplina == codDisciplina){
+                return disciplinas[i].nome;
+            }
+    }
+    return "Nao foi possivel encontrar uma Turma!";
+}
+
+
+int fnSearchTurmaByDisciplina(int codDisciplina,disciplina *disciplinas){
+    int i = 1;
+    for(i; i <= Tamanho ;i++){
+            if(disciplinas[i].codDisciplina == codDisciplina){
+                return disciplinas[i].codTurma;
+            }
+    }
+    return -1;
+}
+
+int fnSearchCursoByTurma(int codTurma,turma *turmas){
+    int i = 1;
+    for(i; i <= Tamanho ;i++){
+            if(turmas[i].codTurma == codTurma){
+                return turmas[i].codCurso;
+            }
+    }
+    return -1;
+}
+
+void fnListaAluno(int matricula,aluno *alunos,int intContador,disciplina *disciplinas,turma * turmas,curso * cursos){
+    int codIndexAluno = fnSearchAluno(matricula,alunos);
+    int codTurma = fnSearchTurmaByDisciplina(alunos[codIndexAluno].codDisciplina[0],disciplinas);
+    int codCurso = fnSearchCursoByTurma(codTurma,turmas);
+    if(codIndexAluno == -1){
+        printf("Nao foi possivel encontrar aluno com a seguinte matricula \"%d\".\n",matricula);
+        return;
+    }
+    printf("Aluno : %s;\nMatricula : %d;\nCurso : %s;\nTurma : %s;\n",alunos[codIndexAluno].nome,alunos[codIndexAluno].matricula,fnSearchCurso(codCurso,cursos),fnSearchTurma(codTurma,turmas));
+
+    printf("Lista Disciplinas :\n");
+    for(i = 0; i <= Tamanho ;i++){
+        if(alunos[codIndexAluno].codDisciplina[i] != 0){
+            printf("   - %s;\n",fnSearchDisciplina(alunos[codIndexAluno].codDisciplina[i],disciplinas));
+        }
+    }
+}
 
 void main(){
-	/*Declaração de variaveis dinamicas com malloc()*/
+
+    /*Declaração de variaveis dinamicas com malloc()*/
     disciplina *disciplinas = (disciplina *) malloc(sizeof(disciplina)* Tamanho);
-	aluno *alunos = (aluno *) malloc(sizeof(aluno)*Tamanho);
-	turma *turmas = (turma *) malloc(sizeof(turma)*Tamanho);
-	curso *cursos = (curso *) malloc(sizeof(curso)*Tamanho);
+    aluno *alunos = (aluno *) malloc(sizeof(aluno)*Tamanho);
+    turma *turmas = (turma *) malloc(sizeof(turma)*Tamanho);
+    curso *cursos = (curso *) malloc(sizeof(curso)*Tamanho);
 
-	/** Accountants struct */
-    int intContCurso = 0,intContTurma = 0, intCodCurso = 0;
+    /** Accountants struct */
+    int intContCurso = 0,intContTurma = 0, intContDisciplina = 0, intContAluno = 0;
+    int intCodCurso = 0,intCodTurma,intCodAluno;
+    /** Menu system */
+    int controle = 9999,entrada,controle1 = 9999,entrada1;
+    while(controle != 0){
+        printf("Selecione uma opcao do menu:\n");
+        printf("1 - Curso\n2 - Turma\n3 - Disciplina\n4 - Aluno\n0 - Exit\n");
+        controle1 = 9999;
+        scanf("%d", &entrada);
 
-	/** Menu system */
-	int controle = 9999,entrada,controle1 = 9999,entrada1;
-	while(controle != 0){
-    	printf("Selecione uma mingw32-gcc.exeopcao do menu:\n");
-    	printf("1 - Curso\n2 - Turma\n3 - Disciplina\n4 - Aluno\n0 - Exit\n");
-    	controle1 = 9999;
-    	scanf("%d", &entrada);
-
-    	switch(entrada){
-        	case 1:
-            	while(controle1 != 0){
-                	printf("Selecione uma opcao do menu Cursos:\n");
-                	printf("1 - Cadastrar\n2 - Listar\n0 - Back\n");
-                	scanf("%i", &entrada1);
-                	switch(entrada1){
-                    	case 1:
-                    	    intContCurso = fnCadastraCurso(cursos,intContCurso);
-                        	if(intContCurso > -1){
+        switch(entrada){
+            case 1:
+                while(controle1 != 0){
+                    printf("Selecione uma opcao do menu Cursos:\n");
+                    printf("1 - Cadastrar\n2 - Listar\n0 - Back\n");
+                    scanf("%i", &entrada1);
+                    switch(entrada1){
+                        case 1:
+                            intContCurso = fnCadastraCurso(cursos,intContCurso);
+                            if(intContCurso > -1){
                                 printf("Salvo!");
-                        	}else{
-                        	    printf("Erro!");
-                        	}
-                        	break;
-                    	case 2:
-                        	fnListaCurso(cursos,intContCurso);
-                        	break;
-                    	case 0:
-                        	controle1 = 0;
-                        	break;
-                    	default:
-                        	printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
-                        	break;
-                	}
-            	}
-            	break;
-        	case 2:
-             	while(controle1 != 0){
-                	printf("Selecione uma opcao do menu Turma:\n");
-                	printf("1 - Cadastrar\n2 - Listar\n0 - Back\n");
-                	scanf("%d", &entrada1);
-                	switch(entrada1){
-                    	case 1:
-                        	intContTurma = fnCadastraTurma(turmas,intContTurma);
-                        	if(intContTurma > -1){
+                            }else{
+                                printf("Erro!");
+                            }
+                            break;
+                        case 2:
+                            fnListaCurso(cursos,intContCurso);
+                            break;
+                        case 0:
+                            controle1 = 0;
+                            break;
+                        default:
+                            printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
+                            break;
+                    }
+                }
+                break;
+            case 2:
+                while(controle1 != 0){
+                    printf("Selecione uma opcao do menu Turma:\n");
+                    printf("1 - Cadastrar\n2 - Listar\n0 - Back\n");
+                    scanf("%d", &entrada1);
+                    switch(entrada1){
+                        case 1:
+                            intContTurma = fnCadastraTurma(turmas,intContTurma);
+                            if(intContTurma > -1){
                                 printf("Salvo!");
-                        	}else{
-                        	    printf("Erro!");
-                        	}
-                        	break;
-                    	case 2:
-                    	    printf("Digite o codigo do curso, das turma que deseja listar:\n");
+                            }else{
+                                printf("Erro!");
+                            }
+                            break;
+                        case 2:
+                            printf("Digite o codigo do curso, das turma que deseja listar:\n");
                             scanf("%d", &intCodCurso);
-                        	fnListaTurma(intCodCurso,turmas,intContTurma,cursos);
-                        	break;
-                    	case 0:
-                        	controle1 = 0;
-                        	break;
-                    	default:
-                        	printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
-                        	break;
-                	}
-            	}
-            	break;
-        	case 3:
-             	while(controle1 != 0){
-                	printf("Selecione uma opcao do menu Disciplina:\n");
-                	printf("1 - Cadastrar\n2 - Listar\n0 - Back\n");
-                	scanf("%d", &entrada1);
-                	switch(entrada1){
-                    	case 1:
-                        	/*fnCadastraDisciplina();*/
-                        	break;
-                    	case 2:
-                        	/*fnListaDisciplina(0);*/
-                        	break;
-                    	case 0:
-                        	controle1 = 0;
-                        	break;
-                    	default:
-                        	printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
-                        	break;
-                	}
-            	}
-            	break;
-        	case 4:
-              	while(controle1 != 0){
-                	printf("Selecione uma opcao do menu Aluno:\n");
-                	printf("1 - Cadastrar\n2 - Listar\n0 - Back\n");
-                	scanf("%d", &entrada1);
-                	switch(entrada1){
-                    	case 1:
-                       	/* fnCadastraAluno();*/
-                        	break;
-                    	case 2:
-                        	/*fnListaAluno(0);*/
-                        	break;
-                    	case 0:
-                        	controle1 = 0;
-                        	break;
-                    	default:
-                        	printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
-                        	break;
-                	}
-            	}
-            	break;
-            	case 0:
-                	printf("\n\n---- GOOD BYE ----\n\n");
-                	controle = 0;
-                	break;
-            	default:
-                	printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
-                	break;
-    	}
-	}
+                            fnListaTurma(intCodCurso,turmas,intContTurma,cursos);
+                            break;
+                        case 0:
+                            controle1 = 0;
+                            break;
+                        default:
+                            printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
+                            break;
+                    }
+                }
+                break;
+            case 3:
+                while(controle1 != 0){
+                    printf("Selecione uma opcao do menu Disciplina:\n");
+                    printf("1 - Cadastrar\n2 - Listar\n0 - Back\n");
+                    scanf("%d", &entrada1);
+                    switch(entrada1){
+                        case 1:
+                            intContDisciplina = fnCadastraDisciplina(disciplinas,intContDisciplina);
+                            if(intContDisciplina > -1){
+                                printf("Salvo!");
+                            }else{
+                                printf("Erro!");
+                            }
+                            break;
+                        case 2:
+                            printf("Digite o codigo da Turma, das disciplinas que deseja listar:\n");
+                            scanf("%d", &intCodTurma);
+                            fnListaDisciplina(intCodTurma,disciplinas,intContDisciplina,turmas);
+                            break;
+                        case 0:
+                            controle1 = 0;
+                            break;
+                        default:
+                            printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
+                            break;
+                    }
+                }
+                break;
+            case 4:
+                while(controle1 != 0){
+                    printf("Selecione uma opcao do menu Aluno:\n");
+                    printf("1 - Cadastrar\n2 - Buscar Aluno\n0 - Back\n");
+                    scanf("%d", &entrada1);
+                    switch(entrada1){
+                        case 1:
+                            intContAluno = fnCadastraAluno(alunos,intContAluno);
+                            if(intContAluno > -1){
+                                printf("Salvo!");
+                            }else{
+                                printf("Erro!");
+                            }
+                            break;
+                        case 2:
+                            printf("Digite matricula do aluno:\n");
+                            scanf("%d", &intCodAluno);
+                            fnListaAluno(intCodAluno,alunos,intContAluno,disciplinas,turmas,cursos);
+                            break;
+                        case 0:
+                            controle1 = 0;
+                            break;
+                        default:
+                            printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
+                            break;
+                    }
+                }
+                break;
+                case 0:
+                    printf("\n\n---- GOOD BYE ----\n\n");
+                    controle = 0;
+                    break;
+                default:
+                    printf("Opcao invalida, por favor digite uma opcao valida!!!\n");
+                    break;
+        }
+    }
 
 }
   /* CRIA ARQUIVO E SALVA
