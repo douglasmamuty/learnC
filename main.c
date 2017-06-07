@@ -1,12 +1,13 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define Tamanho 100
+/** LOCATION WHERE THIS MAIN.C*/
+static const char Path[] = "D:\\projeto\\learnC\\";
+
 struct Alunos{
     char nome[Tamanho];
     int matricula;
-    int codDisciplina[Tamanho] ;
+    int codDisciplina[Tamanho];
 };
 
 typedef struct Alunos aluno;
@@ -31,13 +32,20 @@ struct Turma{
 };
 typedef struct Turma turma;
 
-int fnCadastraCurso(curso *cursos, int intContador){
+int fnCadastraCurso(curso *cursos, int intContador, FILE *fpCurso){
     intContador++;
     printf("Digite o nome do curso: \n");
     scanf("%s",cursos[intContador].nome);
     printf("Digite o codigo do curso: \n");
     scanf("%d", &cursos[intContador].codCurso);
 
+    /**SAVE INTO FILES*/
+    char str[1024];
+    strcpy(str,cursos[intContador].nome);
+    strcat(str,";");
+    strcpy(str,cursos[intContador].codCurso);
+
+    fwrite(str , 1 , sizeof(str) , fpCurso);
     return intContador;
 }
 
@@ -204,6 +212,7 @@ void fnListaAluno(int matricula,aluno *alunos,int intContador,disciplina *discip
     printf("Aluno : %s;\nMatricula : %d;\nCurso : %s;\nTurma : %s;\n",alunos[codIndexAluno].nome,alunos[codIndexAluno].matricula,fnSearchCurso(codCurso,cursos),fnSearchTurma(codTurma,turmas));
 
     printf("Lista Disciplinas :\n");
+    int i;
     for(i = 0; i <= Tamanho ;i++){
         if(alunos[codIndexAluno].codDisciplina[i] != 0){
             printf("   - %s;\n",fnSearchDisciplina(alunos[codIndexAluno].codDisciplina[i],disciplinas));
@@ -212,17 +221,38 @@ void fnListaAluno(int matricula,aluno *alunos,int intContador,disciplina *discip
 }
 
 void main(){
+    /**CREATE FOLDER FOR FILES*/
+    char strPathFolder[Tamanho];
+    strcpy(strPathFolder,Path);
+    strcat(strPathFolder,"files");
+    mkdir(strPathFolder, 777);
 
-    /*Declaração de variaveis dinamicas com malloc()*/
+    /**VARIABLES DINAMICS WITH malloc()*/
     disciplina *disciplinas = (disciplina *) malloc(sizeof(disciplina)* Tamanho);
     aluno *alunos = (aluno *) malloc(sizeof(aluno)*Tamanho);
     turma *turmas = (turma *) malloc(sizeof(turma)*Tamanho);
     curso *cursos = (curso *) malloc(sizeof(curso)*Tamanho);
 
-    /** Accountants struct */
+    char fileCurso[Tamanho];
+    strcpy(fileCurso,strPathFolder);
+    strcat(fileCurso,"\\curso.txt");
+
+    FILE *fpCurso;
+    fpCurso = fopen(fileCurso, "r+");
+    if (fpCurso == NULL){
+        fpCurso = fopen(fileCurso, "wb");
+    }
+    /*char buffer[ 1024 ];
+    while(fgets(buffer, 210, fp) != NULL) {
+        printf("%s\n", buffer);
+    }*/
+
+
+    /**COUNTERS STRUCT*/
     int intContCurso = 0,intContTurma = 0, intContDisciplina = 0, intContAluno = 0;
     int intCodCurso = 0,intCodTurma,intCodAluno;
-    /** Menu system */
+
+    /**MENU SYSTEM*/
     int controle = 9999,entrada,controle1 = 9999,entrada1;
     while(controle != 0){
         printf("Selecione uma opcao do menu:\n");
@@ -238,7 +268,7 @@ void main(){
                     scanf("%i", &entrada1);
                     switch(entrada1){
                         case 1:
-                            intContCurso = fnCadastraCurso(cursos,intContCurso);
+                            intContCurso = fnCadastraCurso(cursos,intContCurso,fpCurso);
                             if(intContCurso > -1){
                                 printf("Salvo!");
                             }else{
@@ -352,24 +382,3 @@ void main(){
     }
 
 }
-  /* CRIA ARQUIVO E SALVA
-
-  FILE *fp;
-   int c;
-   fp = fopen("C:\\Users\\Aluno\\Desktop\\arquivoTex.txt","r");
-   while(1)
-   {
-      c = fgetc(fp);
-      if( feof(fp) )
-      {
-         break ;
-      }
-      printf("%c", c);
-   }
-   fclose(fp);
-  FILE * fp;
-  fp = fopen ("C:\\Users\\Aluno\\Desktop\\arquivoTex.txt", "w+");
-  fprintf(fp, "%s %s %s %d", "We", "are", "in", 2012);
-  fclose(fp);
-  return(0);
-*/
