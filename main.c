@@ -2,7 +2,7 @@
 
 #define Tamanho 100
 /** LOCATION WHERE THIS MAIN.C*/
-static const char Path[] = "D:\\projeto\\learnC\\";
+static const char Path[] = "D:\\projeto\\learnC\\files\\";
 
 struct Alunos{
     char nome[Tamanho];
@@ -32,7 +32,7 @@ struct Turma{
 };
 typedef struct Turma turma;
 
-int fnCadastraCurso(curso *cursos, int intContador, FILE *fpCurso){
+int fnCadastraCurso(curso *cursos, int intContador){
     intContador++;
     printf("Digite o nome do curso: \n");
     scanf("%s",cursos[intContador].nome);
@@ -41,11 +41,16 @@ int fnCadastraCurso(curso *cursos, int intContador, FILE *fpCurso){
 
     /**SAVE INTO FILES*/
     char str[1024];
-    strcpy(str,cursos[intContador].nome);
+    char strArquivo[Tamanho] = "curso.txt";
+    char aux[Tamanho];
+    sprintf(aux, "%d", cursos[intContador].codCurso);
+    strcpy(str,aux);
     strcat(str,";");
-    strcpy(str,cursos[intContador].codCurso);
+    strcat(str,cursos[intContador].nome);
+    if(fnWriteFile(strArquivo,str) == 0){
+            return -1;
+    }
 
-    fwrite(str , 1 , sizeof(str) , fpCurso);
     return intContador;
 }
 
@@ -220,12 +225,35 @@ void fnListaAluno(int matricula,aluno *alunos,int intContador,disciplina *discip
     }
 }
 
+int fnWriteFile(char strFile[Tamanho],char strData[1024]){
+    char file[Tamanho];
+    strcpy(file,Path);
+    strcat(file,strFile);
+    strcat(strData,"\n");
+
+    FILE *fp;
+    fp = fopen(file, "w+");
+    if (fp == NULL){
+        fp = fopen(file, "wb");
+    }
+
+    if(fwrite(strData,strlen(strData), 1,fp) != 1){
+        printf("Erro na escrita do arquivo");
+        return 0;
+    }
+
+    fclose(fp);
+    return 1;
+}
+
+/*int fnFillStructFile(){
+
+}*/
+
+
 void main(){
     /**CREATE FOLDER FOR FILES*/
-    char strPathFolder[Tamanho];
-    strcpy(strPathFolder,Path);
-    strcat(strPathFolder,"files");
-    mkdir(strPathFolder, 777);
+    mkdir(Path, 777);
 
     /**VARIABLES DINAMICS WITH malloc()*/
     disciplina *disciplinas = (disciplina *) malloc(sizeof(disciplina)* Tamanho);
@@ -233,24 +261,9 @@ void main(){
     turma *turmas = (turma *) malloc(sizeof(turma)*Tamanho);
     curso *cursos = (curso *) malloc(sizeof(curso)*Tamanho);
 
-    char fileCurso[Tamanho];
-    strcpy(fileCurso,strPathFolder);
-    strcat(fileCurso,"\\curso.txt");
-
-    FILE *fpCurso;
-    fpCurso = fopen(fileCurso, "r+");
-    if (fpCurso == NULL){
-        fpCurso = fopen(fileCurso, "wb");
-    }
-    /*char buffer[ 1024 ];
-    while(fgets(buffer, 210, fp) != NULL) {
-        printf("%s\n", buffer);
-    }*/
-
-
     /**COUNTERS STRUCT*/
     int intContCurso = 0,intContTurma = 0, intContDisciplina = 0, intContAluno = 0;
-    int intCodCurso = 0,intCodTurma,intCodAluno;
+    int intCodCurso = 0,intCodTurma,intCodAluno,aux ;
 
     /**MENU SYSTEM*/
     int controle = 9999,entrada,controle1 = 9999,entrada1;
@@ -268,10 +281,12 @@ void main(){
                     scanf("%i", &entrada1);
                     switch(entrada1){
                         case 1:
-                            intContCurso = fnCadastraCurso(cursos,intContCurso,fpCurso);
+                            aux = intContCurso;
+                            intContCurso = fnCadastraCurso(cursos,intContCurso);
                             if(intContCurso > -1){
                                 printf("Salvo!");
                             }else{
+                                intContCurso = aux;
                                 printf("Erro!");
                             }
                             break;
