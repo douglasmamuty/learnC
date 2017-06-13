@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #define Tamanho 100
+
 /** LOCATION WHERE THIS MAIN.C*/
 static const char Path[] = "D:\\projeto\\learnC\\files\\";
 
@@ -71,8 +72,28 @@ int fnCadastraTurma(turma *turmas,int intContador){
     printf("Digite o codigo do curso que a turma pertence: \n");
     scanf("%d", &turmas[intContador].codCurso);
 
+     /**SAVE INTO FILES*/
+    char str[1024];
+    char strArquivo[Tamanho] = "turma.txt";
+    char aux[Tamanho];
+
+    sprintf(aux, "%d", turmas[intContador].codTurma);
+    strcpy(str,aux);
+    strcat(str,";");
+
+    sprintf(aux, "%d", turmas[intContador].codCurso);
+    strcat(str,aux);
+    strcat(str,";");
+
+    strcat(str,turmas[intContador].nome);
+
+    if(fnWriteFile(strArquivo,str) == 0){
+            return -1;
+    }
+
     return intContador;
 }
+
 const char* fnSearchCurso(int codCurso,curso *cursos){
     int i = 1;
     for(i; i <= Tamanho ;i++){
@@ -104,6 +125,25 @@ int fnCadastraDisciplina(disciplina *disciplinas, int intContador){
     printf("Digite o codigo do turma que a disciplina pertence: \n");
     scanf("%d", &disciplinas[intContador].codTurma);
 
+    /**SAVE INTO FILES*/
+    char str[1024];
+    char strArquivo[Tamanho] = "disciplina.txt";
+    char aux[Tamanho];
+
+    sprintf(aux, "%d", disciplinas[intContador].codDisciplina);
+    strcpy(str,aux);
+    strcat(str,";");
+
+    sprintf(aux, "%d", disciplinas[intContador].codTurma);
+    strcat(str,aux);
+    strcat(str,";");
+
+    strcat(str,disciplinas[intContador].nome);
+
+    if(fnWriteFile(strArquivo,str) == 0){
+            return -1;
+    }
+
     return intContador;
 }
 
@@ -134,6 +174,23 @@ int fnCadastraDisciplinaAluno(aluno *alunos,int codAluno,int intContador){
     printf("Digite o codigo da disciplina que o aluno pertence: \n");
     scanf("%d", &alunos[codAluno].codDisciplina[intContador]);
     intContador = intContador +1;
+
+    /**SAVE INTO FILES*/
+    char str[1024];
+    char strArquivo[Tamanho] = "disciplinaAluno.txt";
+    char aux[Tamanho];
+
+    sprintf(aux, "%d", codAluno);
+    strcpy(str,aux);
+    strcat(str,";");
+
+    sprintf(aux, "%d", alunos[codAluno].codDisciplina[intContador]);
+    strcat(str,aux);
+
+    if(fnWriteFile(strArquivo,str) == 0){
+            return -1;
+    }
+
     return intContador;
 }
 
@@ -145,6 +202,21 @@ int fnCadastraAluno(aluno *alunos, int intContador){
     scanf("%d", &alunos[intContador].matricula);
     int controle = 9999,entrada;
     int intContDisciplina = 0;
+
+    /**SAVE INTO FILES*/
+    char str[1024];
+    char strArquivo[Tamanho] = "aluno.txt";
+    char aux[Tamanho];
+
+    sprintf(aux, "%d", alunos[intContador].matricula);
+    strcpy(str,aux);
+    strcat(str,";");
+
+    strcat(str,alunos[intContador].nome);
+
+    if(fnWriteFile(strArquivo,str) == 0){
+            return -1;
+    }
 
     while(controle != 0){
         printf("1 - Cadastrar nova disciplina\n0 - Voltar cadastro de aluno\n");
@@ -232,7 +304,7 @@ int fnWriteFile(char strFile[Tamanho],char strData[1024]){
     strcat(strData,"\n");
 
     FILE *fp;
-    fp = fopen(file, "w+");
+    fp = fopen(file, "a+");
     if (fp == NULL){
         fp = fopen(file, "wb");
     }
@@ -246,9 +318,21 @@ int fnWriteFile(char strFile[Tamanho],char strData[1024]){
     return 1;
 }
 
-/*int fnFillStructFile(){
+int fnFillStructFile(char strFile[Tamanho]){
+    char file[Tamanho];
+    strcpy(file,Path);
+    strcat(file,strFile);
 
-}*/
+    FILE *fp;
+    fp = fopen(file, "a+");
+    if (fp == NULL){
+        fp = fopen(file, "wb");
+    }
+
+    char buff[1024];
+
+    return 1;
+}
 
 
 void main(){
@@ -284,10 +368,10 @@ void main(){
                             aux = intContCurso;
                             intContCurso = fnCadastraCurso(cursos,intContCurso);
                             if(intContCurso > -1){
-                                printf("Salvo!");
+                                printf("O curso foi salvo com sucesso!\n");
                             }else{
                                 intContCurso = aux;
-                                printf("Erro!");
+                                printf("Erro, ao cadastrar o curso!\n");
                             }
                             break;
                         case 2:
@@ -309,11 +393,13 @@ void main(){
                     scanf("%d", &entrada1);
                     switch(entrada1){
                         case 1:
+                            aux = intContTurma;
                             intContTurma = fnCadastraTurma(turmas,intContTurma);
                             if(intContTurma > -1){
-                                printf("Salvo!");
+                                printf("A turma foi salvo com sucesso!\n");
                             }else{
-                                printf("Erro!");
+                                intContTurma = aux;
+                                printf("Erro, ao cadastrar a turma!\n");
                             }
                             break;
                         case 2:
@@ -337,11 +423,13 @@ void main(){
                     scanf("%d", &entrada1);
                     switch(entrada1){
                         case 1:
+                            aux = intContDisciplina;
                             intContDisciplina = fnCadastraDisciplina(disciplinas,intContDisciplina);
                             if(intContDisciplina > -1){
-                                printf("Salvo!");
+                                printf("A disciplina foi salvo com sucesso!\n");
                             }else{
-                                printf("Erro!");
+                                intContDisciplina = aux;
+                                printf("Erro, ao cadastrar a disciplina!\n");
                             }
                             break;
                         case 2:
@@ -365,11 +453,13 @@ void main(){
                     scanf("%d", &entrada1);
                     switch(entrada1){
                         case 1:
+                            aux = intContAluno;
                             intContAluno = fnCadastraAluno(alunos,intContAluno);
                             if(intContAluno > -1){
-                                printf("Salvo!");
+                                printf("O aluno foi salvo com sucesso!\n");
                             }else{
-                                printf("Erro!");
+                                intContAluno = aux;
+                                printf("Erro, ao cadastrar o aluno!\n");
                             }
                             break;
                         case 2:
