@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #define Tamanho 100
 
@@ -33,6 +34,52 @@ struct Turma{
 };
 typedef struct Turma turma;
 
+/**FUNCTION CONVERT STRING ARRAY BY SEPARETE*/
+void explode(const char *src, const char *tokens, char ***list, size_t *len){
+    if(src == NULL || list == NULL || len == NULL)
+        return;
+
+    char *str, *copy, **_list = NULL, **tmp;
+    *list = NULL;
+    *len  = 0;
+
+    copy = strdup(src);
+    if(copy == NULL)
+        return;
+
+    str = strtok(copy, tokens);
+    if(str == NULL)
+        goto free_and_exit;
+
+    _list = realloc(NULL, sizeof *_list);
+    if(_list == NULL)
+        goto free_and_exit;
+
+    _list[*len] = strdup(str);
+    if(_list[*len] == NULL)
+        goto free_and_exit;
+    (*len)++;
+
+
+    while((str = strtok(NULL, tokens))){
+        tmp = realloc(_list, (sizeof *_list) * (*len + 1));
+        if(tmp == NULL)
+            goto free_and_exit;
+
+        _list = tmp;
+
+        _list[*len] = strdup(str);
+        if(_list[*len] == NULL)
+            goto free_and_exit;
+        (*len)++;
+    }
+
+
+free_and_exit:
+    *list = _list;
+    free(copy);
+}
+
 int fnCadastraCurso(curso *cursos, int intContador){
     intContador++;
     printf("Digite o nome do curso: \n");
@@ -59,7 +106,9 @@ void fnListaCurso(curso *cursos,int intContador){
     int i = 1;
     printf("Lista de Cursos :\n");
     for(i; i <= intContador; i++){
-            printf("    %d - %s;\n",cursos[i].codCurso,cursos[i].nome);
+            if(!cursos[i].codCurso == 0){
+                printf("    %d - %s;\n",cursos[i].codCurso,cursos[i].nome);
+            }
     }
 }
 
@@ -160,7 +209,7 @@ const char* fnSearchTurma(int codTurma,turma *turmas){
 
 void fnListaDisciplina(int codTurma,disciplina *disciplinas,int intContador,turma *turmas){
     printf("Turma : %s\n",fnSearchTurma(codTurma,turmas));
-    printf(" Lista de Disciplinas :\n");
+    printf("Lista de Disciplinas :\n");
     int i = 1;
     for(i; i <= intContador ;i++){
             if(disciplinas[i].codTurma == codTurma){
@@ -173,7 +222,8 @@ void fnListaDisciplina(int codTurma,disciplina *disciplinas,int intContador,turm
 int fnCadastraDisciplinaAluno(aluno *alunos,int codAluno,int intContador){
     printf("Digite o codigo da disciplina que o aluno pertence: \n");
     scanf("%d", &alunos[codAluno].codDisciplina[intContador]);
-    intContador = intContador +1;
+    int intCodDisciplina = alunos[codAluno].codDisciplina[intContador];
+    intContador++;
 
     /**SAVE INTO FILES*/
     char str[1024];
@@ -184,7 +234,7 @@ int fnCadastraDisciplinaAluno(aluno *alunos,int codAluno,int intContador){
     strcpy(str,aux);
     strcat(str,";");
 
-    sprintf(aux, "%d", alunos[codAluno].codDisciplina[intContador]);
+    sprintf(aux, "%d", intCodDisciplina);
     strcat(str,aux);
 
     if(fnWriteFile(strArquivo,str) == 0){
@@ -195,13 +245,12 @@ int fnCadastraDisciplinaAluno(aluno *alunos,int codAluno,int intContador){
 }
 
 int fnCadastraAluno(aluno *alunos, int intContador){
-    intContador++;
     printf("Digite o nome do aluno: \n");
     scanf("%s",alunos[intContador].nome);
     printf("Digite a matricula do aluno: \n");
     scanf("%d", &alunos[intContador].matricula);
     int controle = 9999,entrada;
-    int intContDisciplina = 0;
+    int intContDisciplina = 1;
 
     /**SAVE INTO FILES*/
     char str[1024];
@@ -234,6 +283,7 @@ int fnCadastraAluno(aluno *alunos, int intContador){
         }
 
     }
+    intContador++;
     return intContador;
 }
 
@@ -279,16 +329,20 @@ int fnSearchCursoByTurma(int codTurma,turma *turmas){
 }
 
 void fnListaAluno(int matricula,aluno *alunos,int intContador,disciplina *disciplinas,turma * turmas,curso * cursos){
+
     int codIndexAluno = fnSearchAluno(matricula,alunos);
-    int codTurma = fnSearchTurmaByDisciplina(alunos[codIndexAluno].codDisciplina[0],disciplinas);
+    int codTurma = fnSearchTurmaByDisciplina(alunos[codIndexAluno].codDisciplina[1],disciplinas);
     int codCurso = fnSearchCursoByTurma(codTurma,turmas);
+
     if(codIndexAluno == -1){
         printf("Nao foi possivel encontrar aluno com a seguinte matricula \"%d\".\n",matricula);
         return;
     }
+
     printf("Aluno : %s;\nMatricula : %d;\nCurso : %s;\nTurma : %s;\n",alunos[codIndexAluno].nome,alunos[codIndexAluno].matricula,fnSearchCurso(codCurso,cursos),fnSearchTurma(codTurma,turmas));
 
     printf("Lista Disciplinas :\n");
+
     int i;
     for(i = 0; i <= Tamanho ;i++){
         if(alunos[codIndexAluno].codDisciplina[i] != 0){
@@ -318,10 +372,12 @@ int fnWriteFile(char strFile[Tamanho],char strData[1024]){
     return 1;
 }
 
-int fnFillStructFile(char strFile[Tamanho]){
+int fnFillStructFile(char strFile[Tamanho],int codStruct,curso *cursos,disciplina *disciplinas,turma *turmas,aluno *alunos){
     char file[Tamanho];
     strcpy(file,Path);
     strcat(file,strFile);
+    int intContador = 1;
+    int codAlunoAux = 0;
 
     FILE *fp;
     fp = fopen(file, "a+");
@@ -331,11 +387,114 @@ int fnFillStructFile(char strFile[Tamanho]){
 
     char buff[1024];
 
-    return 1;
+    switch(codStruct){
+        case 1:/**Curso*/
+            while(fgets(buff, 1024, (FILE*)fp) != NULL){
+                char **list;
+                size_t i, len;
+
+                /**FUNCTION CONVERT STRING ARRAY BY SEPARETE*/
+                explode(buff, ";", &list, &len);
+                cursos[intContador].codCurso = strtol(list[0], NULL, 10);
+                strcpy(cursos[intContador].nome,list[1]);
+                cursos[intContador].nome[strlen(cursos[intContador].nome)-1] = 0;
+
+                /* free list */
+                for(i = 0; i < len; ++i)
+                    free(list[i]);
+                free(list);
+                intContador++;
+            }
+            break;
+        case 2:/**Turma*/
+            while(fgets(buff, 1024, (FILE*)fp) != NULL){
+                char **list;
+                size_t i, len;
+
+                /**FUNCTION CONVERT STRING ARRAY BY SEPARETE*/
+                explode(buff, ";", &list, &len);
+                turmas[intContador].codTurma = strtol(list[0], NULL, 10);
+                turmas[intContador].codCurso = strtol(list[1], NULL, 10);
+                strcpy(turmas[intContador].nome,list[2]);
+                turmas[intContador].nome[strlen(turmas[intContador].nome)-1] = 0;
+
+                /* free list */
+                for(i = 0; i < len; ++i)
+                    free(list[i]);
+                free(list);
+                intContador++;
+            }
+            break;
+        case 3:/**Disciplina*/
+            while(fgets(buff, 1024, (FILE*)fp) != NULL){
+                char **list;
+                size_t i, len;
+
+                /**FUNCTION CONVERT STRING ARRAY BY SEPARETE*/
+                explode(buff, ";", &list, &len);
+                disciplinas[intContador].codDisciplina = strtol(list[0], NULL, 10);
+                disciplinas[intContador].codTurma = strtol(list[1], NULL, 10);
+                strcpy(disciplinas[intContador].nome,list[2]);
+                disciplinas[intContador].nome[strlen(disciplinas[intContador].nome)-1] = 0;
+
+                /* free list */
+                for(i = 0; i < len; ++i)
+                    free(list[i]);
+                free(list);
+                intContador++;
+            }
+            break;
+        case 4:/**Aluno*/
+            while(fgets(buff, 1024, (FILE*)fp) != NULL){
+                char **list;
+                size_t i, len;
+
+                /**FUNCTION CONVERT STRING ARRAY BY SEPARETE*/
+                explode(buff, ";", &list, &len);
+                alunos[intContador].matricula = strtol(list[0], NULL, 10);
+                strcpy(alunos[intContador].nome,list[1]);
+                alunos[intContador].nome[strlen(alunos[intContador].nome)-1] = 0;
+
+                /* free list */
+                for(i = 0; i < len; ++i)
+                    free(list[i]);
+                free(list);
+                intContador++;
+            }
+            break;
+        case 5:/**Disciplina Aluno*/
+            while(fgets(buff, 1024, (FILE*)fp) != NULL){
+                char **list;
+                size_t i, len;
+                /**FUNCTION CONVERT STRING ARRAY BY SEPARETE*/
+                explode(buff, ";", &list, &len);
+
+                if(strtol(list[0], NULL, 10) == codAlunoAux || codAlunoAux == 0){
+                    codAlunoAux = strtol(list[0], NULL, 10);
+                }else{
+                    intContador = 1;
+                }
+                alunos[strtol(list[0], NULL, 10)].codDisciplina[intContador] = strtol(list[1], NULL, 10);
+
+                /* free list */
+                for(i = 0; i < len; ++i)
+                    free(list[i]);
+                free(list);
+                intContador++;
+            }
+            break;
+        default:
+            printf("Não foi possivel reconhecer a origem do arquivo!");
+            break;
+    }
+
+    fclose(fp);
+    return intContador;
 }
 
 
 void main(){
+
     /**CREATE FOLDER FOR FILES*/
     mkdir(Path, 777);
 
@@ -345,9 +504,22 @@ void main(){
     turma *turmas = (turma *) malloc(sizeof(turma)*Tamanho);
     curso *cursos = (curso *) malloc(sizeof(curso)*Tamanho);
 
+    int i;
+    for(i = 0; i < Tamanho; i++){
+        free(alunos[i].matricula);
+        free(alunos[i].nome);
+    }
+
     /**COUNTERS STRUCT*/
-    int intContCurso = 0,intContTurma = 0, intContDisciplina = 0, intContAluno = 0;
+    int intContCurso = 1,intContTurma = 1, intContDisciplina = 1, intContAluno = 1;
     int intCodCurso = 0,intCodTurma,intCodAluno,aux ;
+
+    /**FILL */
+    intContCurso = fnFillStructFile("curso.txt",1,cursos,disciplinas,turmas,alunos);
+    intContTurma = fnFillStructFile("turma.txt",2,cursos,disciplinas,turmas,alunos);
+    intContDisciplina = fnFillStructFile("disciplina.txt",3,cursos,disciplinas,turmas,alunos);
+    intContAluno = fnFillStructFile("aluno.txt",4,cursos,disciplinas,turmas,alunos);
+    fnFillStructFile("disciplinaAluno.txt",5,cursos,disciplinas,turmas,alunos);
 
     /**MENU SYSTEM*/
     int controle = 9999,entrada,controle1 = 9999,entrada1;
